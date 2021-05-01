@@ -28,6 +28,22 @@ parser.add_argument('--full', dest='full', action='store_true', help='Full train
 
 args = parser.parse_args()
 
+def get_unreal_train_test_data(batch_size):
+    data, unreal_train, unreal_test, shape_rgb, shape_depth = get_unreal_data(batch_size)
+    
+    train_generator = Unreal_BasicAugmentRGBSequence(data, unreal_train, batch_size=batch_size, shape_rgb=shape_rgb, shape_depth=shape_depth)
+    test_generator = Unreal_BasicAugmentRGBSequence(data, unreal_test, batch_size=batch_size, shape_rgb=shape_rgb, shape_depth=shape_depth, is_skip_policy=True)
+
+    return train_generator, test_generator
+
+def get_nyu_train_test_data(batch_size):
+    data, nyu2_train, nyu2_test, shape_rgb, shape_depth = get_nyu_data(batch_size)
+
+    train_generator = NYU_BasicAugmentRGBSequence(data, nyu2_train, batch_size=batch_size, shape_rgb=shape_rgb, shape_depth=shape_depth)
+    test_generator = NYU_BasicRGBSequence(data, nyu2_test, batch_size=batch_size, shape_rgb=shape_rgb, shape_depth=shape_depth)
+
+    return train_generator, test_generator
+
 # Inform about multi-gpu training
 if args.gpus == 1: 
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpuids
